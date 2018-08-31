@@ -7,3 +7,4 @@ export default function Question(question, choices, answerKey){
 Question.prototype.isCorrect = function (guessKey) {
     return guessKey === this.answerKey;
 }
+

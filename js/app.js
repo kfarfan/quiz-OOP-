@@ -1,14 +1,17 @@
 import Question from "./question.js";
 import Quiz from "./quiz.js";
 
-let q1 = new Question('who is kevin?',['a,b,c,d'],0);
 
-let q2 = new Question('who is blah?',['a,b,c,d'],0);
 
-let myQuiz = new Quiz([q1,q2]);
+const App = ( () => {
 
-console.log(myQuiz.score)
-console.log(myQuiz.getCurrentQuestion());
-
-myQuiz.guess(0);
-console.log(myQuiz.score);
+    // cache the DOM
+    const quizEl = document.querySelector('.jabquiz');
+    const quizQuestionEl = document.querySelector('.jabquiz__question');
+    const trackerEl = document.querySelector('.jabquiz__tracker');
+    const taglineEl = document.querySelector('.jabquiz__tagline');
+    const choicesEl = document.querySelector('.jabquiz__choices');
+    const progressInnerEl = document.querySelector('.progress__inner');
+    const nextButtonEl = document.querySelector('.next');
+    const restart = document.querySelector('.restart')
+})();

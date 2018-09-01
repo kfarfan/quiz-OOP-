@@ -13,7 +13,7 @@ const App = ( () => {
     const choicesEl = document.querySelector('.jabquiz__choices');
     const progressInnerEl = document.querySelector('.progress__inner');
     const nextButtonEl = document.querySelector('.next');
-    const restart = document.querySelector('.restart')
+    const restartButtonEl = document.querySelector('.restart')
 
     const q1 = new Question(
         "What does CSS stand for?",
@@ -42,11 +42,122 @@ const App = ( () => {
     const quiz = new Quiz([q1, q2, q3, q4]);
 
 
+    const listeners = _ => {
+        nextButtonEl.addEventListener('click', function() {
+            const selectedRadioElem = document.querySelector('input[name="choice"]:checked');
+            if (selectedRadioElem) {
+                const key = Number(selectedRadioElem.getAttribute('data-order'));
+                quiz.guess(key);
+                renderAll();
+            }
+        })
 
-    console.log(quiz);
+        restartButtonEl.addEventListener('click', function() {
+            quiz.reset();
+            renderAll();
+            nextButtonEl.style.opacity = 1;
+            renderTracker();
+        })
+    }
 
 
 
 
+
+    const setValue = (elem, value) => {
+         elem.innerHTML = value;
+    }
+
+
+
+    const renderQuestion = _ => {
+        const question = quiz.getCurrentQuestion().question;
+        setValue(quizQuestionEl, question);
+    }
+
+    const renderChoicesElements = _ => {
+        let markup = "";
+        const currentChoices = quiz.getCurrentQuestion().choices;
+        currentChoices.forEach((elem, index) => {
+            markup += `
+            <li class="jabquiz__choice">
+             <input type="radio" name="choice" class="jabquiz__input" data-order=${index} id="choice${index}">
+             <label for="choice${index}" class="jabquiz__label">
+                <i></i>
+                <span>${elem}</span>
+             </label>
+            </li>
+            `
+        });
+            setValue(choicesEl, markup);
+    }
+
+
+    const renderTracker = _ => {
+        const index = quiz.currentIndex;
+        setValue(trackerEl, `${index+1} out of ${quiz.questions.length}`)
+
+
+    }
+
+    const getPercentage = (num1, num2) => {
+        return Math.round((num1/num2) * 100);
+    }
+
+    const launch = (width, maxPercent) => {
+        let loadingBar = setInterval( function() {
+            if (width > maxPercent) {
+                clearInterval(loadingBar);
+            } else {
+                width++;
+                progressInnerEl.style.width = width + "%";
+            }
+        }, 3)
+    }
+    
+
+    const renderProgress = _ => {
+        // 1. width
+        const currentWidth = getPercentage(quiz.currentIndex,quiz.questions.length);
+        // 2. launch
+        launch(0, currentWidth);
+
+    }
+
+
+    const renderEndScreen = _ => {
+        setValue(quizQuestionEl, `Great Job!`);
+        setValue(taglineEl, `Complete!`);
+        setValue(trackerEl, `Your score: ${getPercentage(quiz.score,quiz.questions.length)}%`);
+        nextButtonEl.style.opacity = 0;
+        renderProgress();
+    }
+
+
+    const renderAll = _ => {
+        if (quiz.hasEnded()){
+            //render the end screen
+            renderEndScreen();
+        } else {
+            //render the question
+            renderQuestion();
+            //render the choices elements
+            renderChoicesElements();
+            //render the tracker
+            renderTracker();
+            //render the progress bar
+            renderProgress();
+        }
+    }
+
+
+    return {
+        renderAll: renderAll,
+        listeners: listeners
+    }
 
 })();
+
+
+App.renderAll();
+App.listeners();
